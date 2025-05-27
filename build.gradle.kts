@@ -33,8 +33,11 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:0.43.0")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.43.0")
     implementation("org.jetbrains.exposed:exposed-java-time:0.43.0")
-    implementation("io.ktor:ktor-server-html-builder:2.3.4") // ou ajuste para sua versão do Ktor
+    implementation("io.ktor:ktor-server-html-builder:2.3.4") // ou ajuste para sua versão do Ktor   
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
+    implementation("io.ktor:ktor-server-auth:2.3.4")
+    implementation("io.ktor:ktor-server-auth-jwt:2.3.4")
+    implementation(kotlin("test"))
 
 }

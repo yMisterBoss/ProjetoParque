@@ -1,31 +1,67 @@
 package com.parque
 
-import io.ktor.serialization.kotlinx.json.*
+import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
+import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.engine.*
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
 import io.ktor.server.netty.*
-import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.response.*
 import org.jetbrains.exposed.sql.Database
-import java.sql.DriverManager
 
 fun main(args: Array<String>) {
-    io.ktor.server.netty.EngineMain.main(args)
-
+    EngineMain.main(args)
 }
 
 fun Application.module() {
     connectToDatabase()
-    configureTemplating()
     configureSerialization()
-    configureHTTP()
+    configureAuthentication()
     configureRouting()
+    println("Servidor iniciado com sucesso.")
 }
 
 fun connectToDatabase() {
-    val url = "jdbc:mysql://localhost:3306/db_Parque"
+    val url = "jdbc:mysql://localhost:3306/esan-dsg11"
     val user = "root"
-    val password = "nUNO@2004"
+    val password = ""
 
-    val connection = DriverManager.getConnection(url, user, password)
-    println("Conectado com sucesso: $connection")
+    try {
+        Database.connect(
+            url = url,
+            driver = "com.mysql.cj.jdbc.Driver",
+            user = user,
+            password = password
+        )
+        println("Base de dados conectado.")
+    }catch(e: Exception){
+        println("Erro ao conectar a Base de dados: ${e.message}")
+        return
+    }
+
+
+}
+
+
+
+fun Application.configureAuthentication() {
+    install(Authentication) {
+        jwt("auth-jwt") {
+            realm = "ktor-sample"
+            verifier(
+                JWT.require(Algorithm.HMAC256("secret"))
+                    .withAudience("http://localhost:8080/")
+                    .withIssuer("http://localhost:8080/")
+                    .build()
+            )
+            validate { credential ->
+                if (credential.payload.getClaim("username").asString() != null) JWTPrincipal(credential.payload)
+                else null
+            }
+            challenge { _, _ ->
+                call.respond(HttpStatusCode.Unauthorized, "Token inválido ou ausente")
+            }
+        }
+    }
 }
