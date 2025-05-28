@@ -1,7 +1,6 @@
 package com.parque.models
 
 import org.jetbrains.exposed.sql.Table
-import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.javatime.datetime
 
 object Reserva : Table("Reserva") {
@@ -14,13 +13,3 @@ object Reserva : Table("Reserva") {
 
     override val primaryKey = PrimaryKey(idReserva)
 }
-
-@Serializable
-data class ReservaDTO(
-    val idReserva: Int? = null,
-    val utilizadorId: Int,
-    val estacionamentoId: Int,
-    val dataInicio: String,
-    val dataSaida: String,
-    val statusReserva: String
-)

@@ -7,6 +7,7 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.netty.*
+import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.response.*
 import org.jetbrains.exposed.sql.Database
 
@@ -19,6 +20,16 @@ fun Application.module() {
     configureSerialization()
     configureAuthentication()
     configureRouting()
+
+    install(CORS) {
+        anyHost() // Em produção, use host específico: host("localhost:3000")
+        allowHeader(HttpHeaders.ContentType)
+        allowHeader(HttpHeaders.Authorization)
+        allowMethod(HttpMethod.Get)
+        allowMethod(HttpMethod.Post)
+        allowMethod(HttpMethod.Put)
+        allowMethod(HttpMethod.Delete)
+    }
     println("Servidor iniciado com sucesso.")
 }
 
@@ -35,7 +46,9 @@ fun connectToDatabase() {
             password = password
         )
         println("Base de dados conectado.")
+
     }catch(e: Exception){
+
         println("Erro ao conectar a Base de dados: ${e.message}")
         return
     }

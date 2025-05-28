@@ -10,10 +10,3 @@ object Estacionamento : Table("Estacionamento") {
 
     override val primaryKey = PrimaryKey(idEstacionamento)
 }
-
-@Serializable
-data class EstacionamentoDTO(
-    val id: Int? = null,
-    val localizacao: String,
-    val status: String
-)

@@ -1,8 +1,12 @@
 package com.parque
 
+import com.parque.models.ReservaDTO
 import com.parque.models.Reserva
+import com.parque.models.UtilizadorDTO
 import com.parque.models.Utilizadores
+import com.parque.models.EstacionamentoDTO
 import com.parque.models.Estacionamento
+import com.parque.models.HistoricoReservaDTO
 import com.parque.models.HistoricoReserva
 import com.parque.utils.*
 import io.ktor.http.*
@@ -127,7 +131,7 @@ fun Application.configureRouting() {
             post {
                 val nova = call.receive<ReservaDTO>()
                 transaction {
-                    inserirReserva(nova.idUtilizador, nova.idEstacionamento, nova.statusReserva)
+                    inserirReserva(nova.utilizadorId, nova.estacionamentoId, nova.statusReserva)
                 }
                 call.respond(HttpStatusCode.Created)
             }
@@ -136,7 +140,7 @@ fun Application.configureRouting() {
                 val id = call.parameters["id"]?.toIntOrNull() ?: return@put call.respond(HttpStatusCode.BadRequest)
                 val atualizada = call.receive<ReservaDTO>()
                 transaction {
-                    atualizarReserva(id, atualizada.idUtilizador, atualizada.idEstacionamento, atualizada.statusReserva)
+                    atualizarReserva(id, atualizada.utilizadorId, atualizada.estacionamentoId, atualizada.statusReserva)
                 }
                 call.respond(HttpStatusCode.OK)
             }

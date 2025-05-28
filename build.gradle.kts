@@ -39,5 +39,7 @@ dependencies {
     implementation("io.ktor:ktor-server-auth:2.3.4")
     implementation("io.ktor:ktor-server-auth-jwt:2.3.4")
     implementation(kotlin("test"))
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.4") // ou versão compatível
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0") // certifique-se dessa
 
 }
