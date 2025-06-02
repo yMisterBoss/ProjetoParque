@@ -98,9 +98,3 @@ Authorization: Bearer <token>
 
 - Acesso a estatísticas e gestão de utilizadores
 - Verificação do tipo do utilizador (`tipo == "admin"`) no JWT ou após login
-
-## 🧪 Testes
-
-```bash
-./gradlew test
-```
