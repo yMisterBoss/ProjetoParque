@@ -52,8 +52,6 @@ fun connectToDatabase() {
         println("Erro ao conectar a Base de dados: ${e.message}")
         return
     }
-
-
 }
 
 
