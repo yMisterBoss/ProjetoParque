@@ -69,8 +69,9 @@ fun Application.configureAuthentication() {
                     .build()
             )
             validate { credential ->
-                if (credential.payload.getClaim("username").asString() != null) JWTPrincipal(credential.payload)
-                else null
+                if (credential.payload.getClaim("username").asString() != null) {
+                    JWTPrincipal(credential.payload)
+                } else null
             }
             challenge { _, _ ->
                 call.respond(HttpStatusCode.Unauthorized, "Token inválido ou ausente")

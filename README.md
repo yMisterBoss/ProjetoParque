@@ -1,44 +1,106 @@
-# projetoparque
 
-This project was created using the [Ktor Project Generator](https://start.ktor.io).
+# 🚗 Sistema de Reservas de Estacionamento
 
-Here are some useful links to get you started:
+Este é um sistema web completo com:
+- Backend em **Ktor (Kotlin)** com autenticação JWT
+- Frontend em **HTML/CSS/JS** (mockup) ou React (em desenvolvimento)
+- Funcionalidades para **utilizadores** e **administradores**
 
-- [Ktor Documentation](https://ktor.io/docs/home.html)
-- [Ktor GitHub page](https://github.com/ktorio/ktor)
-- The [Ktor Slack chat](https://app.slack.com/client/T09229ZC6/C0A974TJ9). You'll need to [request an invite](https://surveys.jetbrains.com/s3/kotlin-slack-sign-up) to join.
-
-## Features
-
-Here's a list of features included in this project:
-
-| Name                                                                   | Description                                                                        |
-| ------------------------------------------------------------------------|------------------------------------------------------------------------------------ |
-| [Routing](https://start.ktor.io/p/routing)                             | Provides a structured routing DSL                                                  |
-| [Thymeleaf](https://start.ktor.io/p/thymeleaf)                         | Serves HTML content, templated using Thymeleaf                                     |
-| [Static Content](https://start.ktor.io/p/static-content)               | Serves static files from defined locations                                         |
-| [Content Negotiation](https://start.ktor.io/p/content-negotiation)     | Provides automatic content conversion according to Content-Type and Accept headers |
-| [kotlinx.serialization](https://start.ktor.io/p/kotlinx-serialization) | Handles JSON serialization using kotlinx.serialization library                     |
-| [CORS](https://start.ktor.io/p/cors)                                   | Enables Cross-Origin Resource Sharing (CORS)                                       |
-
-## Building & Running
-
-To build or run the project, use one of the following tasks:
-
-| Task                          | Description                                                          |
-| -------------------------------|---------------------------------------------------------------------- |
-| `./gradlew test`              | Run the tests                                                        |
-| `./gradlew build`             | Build everything                                                     |
-| `buildFatJar`                 | Build an executable JAR of the server with all dependencies included |
-| `buildImage`                  | Build the docker image to use with the fat JAR                       |
-| `publishImageToLocalRegistry` | Publish the docker image locally                                     |
-| `run`                         | Run the server                                                       |
-| `runDocker`                   | Run using the local docker image                                     |
-
-If the server starts successfully, you'll see the following output:
+## 📁 Estrutura do Projeto
 
 ```
-2024-12-04 14:32:45.584 [main] INFO  Application - Application started in 0.303 seconds.
-2024-12-04 14:32:45.682 [main] INFO  Application - Responding at http://0.0.0.0:8080
+/backend           # API em Ktor
+/frontend          # Interface web (HTML/CSS ou React)
+README.md
 ```
 
+## ⚙️ Requisitos
+
+- **JDK 17 ou superior**
+- **Gradle (Kotlin DSL)**
+- **MySQL** (ou compatível)
+- **Node.js e npm** (para frontend em React)
+- IDE recomendada: IntelliJ IDEA
+
+## 🛠️ Configuração do Backend
+
+1. **Base de Dados**
+
+Cria a base de dados `esan-dsg11` no MySQL e a tabela `Utilizadores`:
+
+```sql
+CREATE DATABASE `esan-dsg11`;
+
+CREATE TABLE `Utilizadores` (
+  `idUtilizadores` INT AUTO_INCREMENT PRIMARY KEY,
+  `Nome_Utilizador` VARCHAR(245),
+  `Tipo` VARCHAR(45),
+  `Data_Criacao` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `Email` VARCHAR(100) UNIQUE,
+  `Password` VARCHAR(255)
+);
+```
+
+2. **Configuração**
+
+Verifica o ficheiro `Application.kt`:
+```kotlin
+val url = "jdbc:mysql://localhost:3306/esan-dsg11"
+val user = "root"
+val password = ""
+```
+
+3. **Compilar e Executar**
+
+```bash
+./gradlew run
+```
+
+A API estará em: `http://localhost:8080`
+
+## 📌 Endpoints da API
+
+### Autenticação
+
+- `POST /api/login`: Faz login e devolve o token JWT
+- `GET /api/me`: Devolve os dados do utilizador autenticado
+
+### Utilizadores
+
+- `GET /utilizadores`: Lista todos os utilizadores
+- `POST /utilizadores`: Regista novo utilizador
+
+## 🔐 JWT
+
+- Secret: `"secret"`
+- Issuer e Audience: `"http://localhost:8080/"`
+
+No frontend, o token deve ser incluído assim:
+
+```js
+Authorization: Bearer <token>
+```
+
+## 💻 Frontend
+
+1. Abre `/frontend/index.html` no browser  
+   Ou usa `npm start` no React (caso uses versão React)
+
+2. Páginas incluídas:
+
+- `Início`
+- `Sobre`
+- `Contato`
+- `Login`
+- `Registrar`
+
+## 👮‍♂️ Admin
+
+- Acesso a estatísticas e gestão de utilizadores
+- Verificação do tipo do utilizador (`tipo == "admin"`) no JWT ou após login
+
+## 🧪 Testes
+
+```bash
+./gradlew test
+```

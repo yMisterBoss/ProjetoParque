@@ -1,5 +1,7 @@
 package com.parque
 
+import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
 import com.parque.models.ReservaDTO
 import com.parque.models.Reserva
 import com.parque.models.UtilizadorDTO
@@ -8,6 +10,8 @@ import com.parque.models.EstacionamentoDTO
 import com.parque.models.Estacionamento
 import com.parque.models.HistoricoReservaDTO
 import com.parque.models.HistoricoReserva
+import com.parque.models.LoginRequest
+import com.parque.models.LoginResponse
 import com.parque.utils.*
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -16,6 +20,7 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
@@ -32,30 +37,51 @@ fun Application.configureRouting() {
         get("/") {
             call.respondText("Servidor em execução!")
         }
+
         authenticate("auth-jwt") {
-            route("/api/admin") {
-                get {
-                    val principal = call.principal<JWTPrincipal>()
-                    val role = principal?.getClaim("role", String::class)
-                    if (role != "admin") {
-                        call.respond(HttpStatusCode.Forbidden, "Acesso negado")
-                        return@get
-                    }
-                    call.respondText("Bem-vindo, administrador!")
+            get("/api/me") {
+                val principal = call.principal<JWTPrincipal>()
+                val email = principal!!.payload.getClaim("username").asString()
+
+                // Opcional: buscar mais dados do utilizador
+                val user = transaction {
+                    Utilizadores.select { Utilizadores.email eq email }.firstOrNull()
+                }
+
+                if (user != null) {
+                    call.respond(
+                        UtilizadorDTO(
+                            idUtilizador = user[Utilizadores.idUtilizador],
+                            nome = user[Utilizadores.nome],
+                            tipo = user[Utilizadores.tipo],
+                            email = user[Utilizadores.email],
+                            password = "" // nunca enviar senha!
+                        )
+                    )
+                } else {
+                    call.respond(HttpStatusCode.NotFound, "Utilizador não encontrado")
                 }
             }
         }
+
         post("/api/login") {
-            val credentials = call.receive<UtilizadorDTO>()
-            // Valide as credenciais do usuário (exemplo simplificado)
-            if (credentials.nome == "admin" && credentials.password == "admin") {
-                val token = gerarToken(credentials.nome, "admin") // Define o papel como "admin"
-                call.respond(mapOf("token" to token))
-            } else if (credentials.nome == "user" && credentials.password == "user") {
-                val token = gerarToken(credentials.nome, "user") // Define o papel como "user"
+            val req = call.receive<LoginRequest>()
+
+            val user = transaction {
+                Utilizadores.select { Utilizadores.email eq req.email }.firstOrNull()
+            }
+
+            if (user != null && user[Utilizadores.password] == req.password) {
+                val token = JWT.create()
+                    .withAudience("http://localhost:8080/")   // ⚠️ deve ser igual ao verifier
+                    .withIssuer("http://localhost:8080/")     // ⚠️ igual ao verifier
+                    .withClaim("username", req.email)
+                    .sign(Algorithm.HMAC256("secret"))        // ⚠️ mesma secret usada no verifier
+
+                // Aqui está a resposta com o token como texto simples
                 call.respond(mapOf("token" to token))
             } else {
-                call.respond(HttpStatusCode.Unauthorized, "Credenciais inválidas")
+                call.respond(HttpStatusCode.Unauthorized, "Email ou senha inválidos")
             }
         }
 
@@ -158,8 +184,8 @@ fun Application.configureRouting() {
                     Estacionamento.selectAll().map {
                         EstacionamentoDTO(
                             it[Estacionamento.idEstacionamento],
-                            it[Estacionamento.status],
-                            it[Estacionamento.localizacao]
+                            it[Estacionamento.localizacao],
+                            it[Estacionamento.status]
                         )
                     }
                 }

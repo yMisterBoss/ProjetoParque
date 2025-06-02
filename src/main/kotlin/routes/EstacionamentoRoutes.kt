@@ -15,7 +15,7 @@ fun Route.estacionamentoRoutes() {
         get {
             val ests = transaction {
                 Estacionamento.selectAll().map {
-                    EstacionamentoDTO(it[Estacionamento.idEstacionamento], it[Estacionamento.status], it[Estacionamento.localizacao])
+                    EstacionamentoDTO(it[Estacionamento.idEstacionamento], it[Estacionamento.localizacao], it[Estacionamento.status])
                 }
             }
             call.respond(ests)

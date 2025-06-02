@@ -33,13 +33,13 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:0.43.0")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.43.0")
     implementation("org.jetbrains.exposed:exposed-java-time:0.43.0")
-    implementation("io.ktor:ktor-server-html-builder:2.3.4") // ou ajuste para sua versão do Ktor   
+    implementation("io.ktor:ktor-server-html-builder:2.3.4")
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
     implementation("io.ktor:ktor-server-auth:2.3.4")
     implementation("io.ktor:ktor-server-auth-jwt:2.3.4")
     implementation(kotlin("test"))
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.4") // ou versão compatível
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0") // certifique-se dessa
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 
 }
