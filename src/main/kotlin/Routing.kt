@@ -198,11 +198,14 @@ fun Application.configureRouting() {
                 call.respond(HttpStatusCode.Created)
             }
 
-            put("/{id}") {
-                val id = call.parameters["id"]?.toIntOrNull() ?: return@put call.respond(HttpStatusCode.BadRequest)
+            put("/{loc}") {
+                val loc = call.parameters["loc"]?.toString() ?: return@put call.respond(HttpStatusCode.BadRequest)
                 val e = call.receive<EstacionamentoDTO>()
-                transaction { atualizarEstacionamento(id, e.status, e.localizacao) }
-                call.respond(HttpStatusCode.OK)
+
+                transaction {
+                    atualizarEstacionamento(e.status, loc)
+                }
+                call.respond(HttpStatusCode.OK, "Estacionamento atualizado com sucesso")
             }
 
             delete("/{id}") {
